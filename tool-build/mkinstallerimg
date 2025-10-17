@@ -1,0 +1,4 @@
+#!/bin/bash
+# Abo Linux Utility: Creates the installer image file (a stripped-down live image containing the installer).
+# This image is optimized for running the installation process only.
+

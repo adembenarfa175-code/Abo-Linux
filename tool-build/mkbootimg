@@ -1,0 +1,4 @@
+#!/bin/bash
+# Abo Linux Utility: Creates the final boot.img file for ARM64 devices.
+# Usage: mkbootimg --kernel <path/to/vmlinuz> --ramdisk <path/to/initramfs> --output boot.img
+

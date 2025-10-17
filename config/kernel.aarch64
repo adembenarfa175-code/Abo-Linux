@@ -1,0 +1,4 @@
+# Linux Kernel .config file for Abo Linux 1 "proxy" (aarch64)
+# Example: CONFIG_ARM64=y
+# Example: CONFIG_MODULES=y
+

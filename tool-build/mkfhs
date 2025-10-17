@@ -1,0 +1,19 @@
+#!/bin/bash
+# Abo Linux Utility: Creates the essential File Hierarchy Standard (FHS) directories in the target rootFS.
+
+LFS="$1"
+if [ -z "$LFS" ]; then
+    echo "Error: LFS (rootFS path) not provided." >&2
+    exit 1
+fi
+
+# Create basic directories
+mkdir -v $LFS/{etc,var,boot,home,mnt,opt,srv,tmp,usr,usr/bin,usr/lib,usr/sbin}
+mkdir -v $LFS/{bin,lib,sbin}
+mkdir -v $LFS/var/lib
+mkdir -v $LFS/var/lib/apka # Abo Package Manager database
+mkdir -v $LFS/var/{log,mail,spool}
+mkdir -v $LFS/usr/local/{bin,etc,lib,sbin,share}
+mkdir -v $LFS/run
+
+echo "FHS structure created successfully in $LFS."
