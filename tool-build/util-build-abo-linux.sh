@@ -1,105 +1,76 @@
 #!/bin/bash
-# util-build-abo-linux.sh - Abo Linux 1 "proxy" Automated Build Tool
-# Abo: Arm64 Building Operating System
+# Abo Linux Build Utility: Main script to build the entire system from source.
+set -e
 
-# ==========================================================
-# 1. Configuration: Define Paths and Target Architecture
-# ==========================================================
+LFS="/root/abo-linux/rootFS"
+TARGET="aarch64-lfs-linux-gnu"
+BUILD_DIR="tool-build"
+LOG_FILE="tool-build/build-log-2025-10-17.log"
+export PATH="/usr/bin:/bin" # Ensure minimal, clean PATH for cross-compilation
 
-# Determine the absolute path of the abo-linux base directory
-ABO_DIR=$(cd "$(dirname "$0")/.." && pwd)
-SOURCE_DIR="$ABO_DIR/source"
-ROOTFS_DIR="$ABO_DIR/rootFS"
-TOOL_BUILD_DIR="$ABO_DIR/tool-build"
-LOG_FILE="$TOOL_BUILD_DIR/build-log-$(date +%F).log"
-
-# Define Target Architecture (Default: aarch64 for mobile)
-TARGET_ARCH="aarch64" 
-
-# Define Cross-Compilation variables based on the architecture
-export LFS_TGT="${TARGET_ARCH}-lfs-linux-gnu"
-export LFS="$ROOTFS_DIR"
-export PATH="$TOOL_BUILD_DIR/bin:$PATH"
-
-# Configuration Files Lookup (For future steps)
-GRUB_CFG="$ABO_DIR/config/grub.${TARGET_ARCH}.cfg"
-KERNEL_CFG="$ABO_DIR/config/kernel.${TARGET_ARCH}"
-PACKAGE_LIST="$ABO_DIR/config/package.${TARGET_ARCH}"
-
-# ==========================================================
-# 2. Logging and Error Handling
-# ==========================================================
-
-# Function to log messages
+# --- Helper Functions ---
 log() {
-    echo "$(date +%H:%M:%S) [INFO] $1" | tee -a "$LOG_FILE"
+    echo "19:01:35 [] " | tee -a 
 }
 
-# Function to handle build errors
-handle_error() {
-    log "[ERROR] Build failed at step $1. Check $LOG_FILE for details."
-    # Optional: You can add cleanup here if needed
-    exit 1
-}
-
-# ==========================================================
-# 3. Build Core Cross-Toolchain: BINUTILS (LFS Chapter 5.2)
-# ==========================================================
-
-build_binutils() {
-    log "Starting 5.2: Building Binutils for Cross-Compilation ($LFS_TGT)..."
+build_package() {
+    PKG_NAME=""
+    SRC_FILE="source/.tar.xz"
     
-    # 1. Check Source and Extract
-    BINUTILS_VERSION="2.40"
-    BINUTILS_TARBALL="$SOURCE_DIR/binutils-${BINUTILS_VERSION}.tar.xz"
-
-    if [ ! -f "$BINUTILS_TARBALL" ]; then
-        handle_error "Binutils source file not found in $SOURCE_DIR. Please download it first."
+    log INFO "Starting build for ..."
+    
+    if [ ! -f "" ]; then
+        log ERROR " source file not found: . Please run wget."
+        exit 1
     fi
     
-    tar -xf "$BINUTILS_TARBALL" -C /tmp/ || handle_error "Extraction of Binutils failed."
-    cd "/tmp/binutils-${BINUTILS_VERSION}" || handle_error "cd to Binutils source."
-
-    # 2. Configure for ARM64 (aarch64)
-    mkdir -v build
-    cd build
+    # Extract
+    tar -xf "" -C /tmp
+    cd /tmp/
     
-    log "Configuring Binutils..."
+    # 1. Binutils (Stage 1 - Cross-Compiler)
+    if [ "" = "binutils-2.40" ]; then
+        mkdir -p build && cd build
+        log INFO "Configuring Binutils..."
+        ../configure --prefix=/usr --target= --with-sysroot= --disable-nls --disable-werror
+        log INFO "Compiling Binutils (using -j1)..."
+        make -j1 # Use -j1 to avoid OOM errors
+        log INFO "Installing Binutils..."
+        make install
+        log SUCCESS "Binutils installed. Ready for GCC Stage 1."
+    fi
     
-    # We use $HOME/abo-linux/tool-build as the prefix (same as $TOOL_BUILD_DIR)
-    ../configure --prefix="$TOOL_BUILD_DIR" \
-                 --with-sysroot="$ROOTFS_DIR" \
-                 --target="$LFS_TGT" \
-                 --disable-nls \
-                 --enable-gprofng=no \
-                 --disable-werror 2>&1 | tee -a "$LOG_FILE" || handle_error "Binutils Configure"
+    # 2. GCC (Stage 1 - First pass)
+    if [ "" = "gcc-13.2.0" ]; then
+        mkdir -p build && cd build
+        # We need symlinks for GCC build
+        ln -sfv /usr/bin/ld /usr/bin/-ld
+        
+        log INFO "Configuring GCC Stage 1..."
+        ../configure --prefix=/usr --target= --with-sysroot= --disable-nls --disable-libssp --disable-libquadmath
+        log INFO "Compiling GCC Stage 1 (using -j1)..."
+        make -j1 all-gcc
+        log INFO "Installing GCC Stage 1..."
+        make install-gcc
+        log SUCCESS "GCC Stage 1 installed. Ready for Glibc."
+    fi
 
-    # 3. Compile and Install
-    log "Compiling Binutils (This may take time)..."
-    make 2>&1 | tee -a "$LOG_FILE" || handle_error "Binutils Make"
-    
-    log "Installing Binutils to $TOOL_BUILD_DIR..."
-    make install 2>&1 | tee -a "$LOG_FILE" || handle_error "Binutils Install"
-
-    # 4. Cleanup
-    cd /tmp
-    rm -rf "binutils-${BINUTILS_VERSION}"
-    log "Binutils build and cleanup successful. Toolchain is partially ready."
+    # Cleanup
+    cd /root/abo-linux
+    rm -rf /tmp/
 }
 
-# ==========================================================
-# 4. Main Execution Flow
-# ==========================================================
+# --- Main Build Process ---
 
-log "Starting Abo Linux Build Utility (util-build-abo-linux.sh) for $LFS_TGT"
-log "Using Kernel Config: $KERNEL_CFG | Package List: $PACKAGE_LIST"
-
-# Check if required directories exist
-if [ ! -d "$ROOTFS_DIR" ] || [ ! -d "$TOOL_BUILD_DIR" ]; then
-    handle_error "rootFS or tool-build directory not found. Please run initial setup (mkdir) first."
+# 0. Setup FHS
+if [ ! -d "/etc" ]; then
+    log INFO "Running mkfhs to create  structure."
+    tool-build/mkfhs ""
 fi
 
-build_binutils
+# 1. Build Toolchain Stage 1
+build_package "binutils-2.40"
+build_package "gcc-13.2.0"
 
-log "Core Toolchain setup is ready for next step: GCC (Chapter 5.3)."
+log SUCCESS "Abo Linux Cross-Toolchain Bootstrap Complete. Next: Glibc and full GCC."
 

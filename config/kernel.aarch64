@@ -1,4 +1,11 @@
-# Linux Kernel .config file for Abo Linux 1 "proxy" (aarch64)
-# Example: CONFIG_ARM64=y
-# Example: CONFIG_MODULES=y
-
+# Abo Linux Kernel Config for aarch64 (v1.0.1)
+ARCH=arm64
+CROSS_COMPILE=aarch64-lfs-linux-gnu-
+CONFIG_EMBEDDED=y
+CONFIG_DEVTMPFS=y
+CONFIG_EXT4_FS=y
+CONFIG_SQUASHFS=y
+CONFIG_ISO9660_FS=y
+CONFIG_VIRTIO_MENU=y
+CONFIG_VIRTIO_NET=y
+CONFIG_VIRTIO_BLK=y
