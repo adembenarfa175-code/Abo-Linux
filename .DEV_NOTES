@@ -1,0 +1,6 @@
+# Abo Linux DEV Branch Notes (Developers Integration)
+
+This branch receives small, frequent, and regular updates from contributors. 
+It's the staging area before merging stable features into 'main'.
+
+Current Focus: Cross-Toolchain Stages (GCC, Glibc).
