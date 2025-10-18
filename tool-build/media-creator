@@ -1,4 +1,0 @@
-#!/bin/bash
-# Abo Linux Utility: Generic tool for creating various media types (ISO, USB images, virtual disk files).
-# Acts as a wrapper for mkinstallerimg-media and mkliveiso.
-

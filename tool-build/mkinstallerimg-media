@@ -1,4 +1,0 @@
-#!/bin/bash
-# Abo Linux Utility: Compiles the installer image into a distributable ISO or USB image (e.g., Abo-installer-1.0.iso).
-# This is the final ISO or image file that the end-user downloads for installation.
-
