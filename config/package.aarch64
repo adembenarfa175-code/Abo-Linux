@@ -1,0 +1,7 @@
+# Abo Linux Core Packages List
+binutils-2.40
+gcc-13.2.0
+glibc-2.38
+linux-6.6.27
+bash-5.2.21
+coreutils-9.4

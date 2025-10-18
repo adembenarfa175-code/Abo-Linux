@@ -1,0 +1,4 @@
+#!/bin/bash
+# Abo Linux Utility: Installs GRUB bootloader onto the target hard disk when running from a Live environment.
+# This is the utility that users run after booting the Live system.
+

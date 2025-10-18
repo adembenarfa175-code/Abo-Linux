@@ -1,0 +1,4 @@
+#!/bin/bash
+# Abo Linux Utility: Creates the final compressed, read-only system image (e.g., system.img or squashfs).
+# This image contains the complete Abo Linux root filesystem (rootFS).
+
