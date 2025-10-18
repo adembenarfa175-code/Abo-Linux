@@ -1,4 +1,0 @@
-#!/bin/bash
-# Abo Linux Utility: Creates a bootable media image that strictly validates FHS compliance before finalizing.
-# Ensures the system image contains all necessary FHS directories/symlinks.
-

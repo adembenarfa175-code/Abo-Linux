@@ -1,4 +1,0 @@
-#!/bin/bash
-# Abo Linux Utility: Compiles the boot.img, live image (mkliveimg output), and GRUB files into a single bootable ISO/image.
-# This is the final distributable file for the user.
-

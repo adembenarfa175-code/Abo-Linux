@@ -1,5 +1,0 @@
-# Abo-Guard Configuration Settings for aarch64
-# Define paths and expected file hashes here.
-GUARD_CHECKS=1
-KERNEL_HASH="[Expected_Hash_of_Kernel]"
-
