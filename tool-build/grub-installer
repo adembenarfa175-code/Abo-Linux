@@ -1,4 +1,0 @@
-#!/bin/bash
-# Abo Linux Utility: Installs GRUB bootloader components into the rootFS.
-# Runs inside the chroot environment to install boot files to /boot.
-
